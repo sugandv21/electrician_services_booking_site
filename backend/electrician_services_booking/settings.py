@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-+k%^-+d&7tj+%t1u6ku((r!1uh4ez2h3(j^g7+f(qho1xuo47s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -184,5 +184,6 @@ ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@example.com")
 
 SESSION_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SECURE = False   # True on HTTPS in production
-CSRF_COOKIE_SECURE = False      # True on HTTPS in production
+SESSION_COOKIE_SECURE = True 
+
+CSRF_COOKIE_SECURE = True 
