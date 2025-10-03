@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "electric_products",
     "cart",
     "orders",
+    "account", 
 ]
 
 MIDDLEWARE = [
@@ -198,5 +199,6 @@ CSRF_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = True 
 
 CSRF_COOKIE_SECURE = True 
+
 
 
