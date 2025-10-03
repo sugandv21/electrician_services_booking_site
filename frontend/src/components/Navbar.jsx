@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
 import logo from "../assets/logo.png";
 
@@ -47,6 +47,36 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [servicesOpenDesktop, setServicesOpenDesktop] = useState(false);
   const [servicesOpenMobile, setServicesOpenMobile] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [userName, setUserName] = useState(null);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // ✅ Get user from localStorage
+  const refreshUser = () => {
+    const email = localStorage.getItem("user_email");
+    if (email) {
+      const namePart = email.split("@")[0];
+      const formatted = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+      setUserName(formatted);
+    } else {
+      setUserName(null);
+    }
+  };
+
+  useEffect(() => {
+    refreshUser();
+  }, [location]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("user_email");
+    setAccountOpen(false);
+    refreshUser();
+    navigate("/auth");
+  };
 
   return (
     <header className="w-full shadow">
@@ -87,27 +117,63 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Links */}
-          <nav className="hidden lg:flex flex-1 justify-center space-x-8 font-semibold">
+          <nav className="hidden lg:flex flex-1 justify-center space-x-8 font-semibold relative">
             <Link to="/">Home</Link>
-            <button
+
+            {/* Services toggle */}
+            <div
               onClick={() => setServicesOpenDesktop(!servicesOpenDesktop)}
-              className="flex items-center space-x-1 hover:text-white"
+              className="flex items-center space-x-1 cursor-pointer hover:text-white"
             >
-              <Link to="/services/commercial">
               <span>Services</span>
-              </Link>
               <ChevronDown
                 className={`w-4 h-4 transform transition ${
                   servicesOpenDesktop ? "rotate-180" : ""
                 }`}
               />
-            </button>
+            </div>
+
             <Link to="/emergency">Emergency electrician</Link>
             <Link to="/about">About</Link>
             <Link to="/contact">Contact</Link>
             <Link to="/areas">Areas we services</Link>
-            <Link to="/account">Account</Link>
             <Link to="/cart">Cart</Link>
+
+            {/* ✅ Account dropdown */}
+            {userName ? (
+              <div className="relative">
+                <button
+                  onClick={() => setAccountOpen(!accountOpen)}
+                  className="flex items-center space-x-1"
+                >
+                  <span>Hello {userName}</span>
+                  <ChevronDown
+                    className={`w-4 h-4 transform transition ${
+                      accountOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {accountOpen && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded-md shadow-lg py-2 z-50">
+                    <Link
+                      to="/account"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setAccountOpen(false)}
+                    >
+                      My Account
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to="/auth">Account</Link>
+            )}
           </nav>
 
           {/* Hamburger (mobile only) */}
@@ -132,15 +198,19 @@ export default function Navbar() {
                   </Link>
                 </h4>
                 <ul className="space-y-1 font-bold">
-                  {col.items.map((item, i) => (
-                    <li
-                      key={i}
-                      className="hover:text-orange-600 cursor-pointer"
-                    >
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+  {col.items.map((item, i) => (
+    <li key={i}>
+      <Link
+        to={col.path}
+        className="hover:text-orange-600 cursor-pointer"
+        onClick={() => setServicesOpenDesktop(false)} // ✅ close dropdown
+      >
+        {item}
+      </Link>
+    </li>
+  ))}
+</ul>
+
               </div>
             ))}
           </div>
@@ -149,7 +219,9 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {mobileOpen && (
           <div className="lg:hidden flex flex-col bg-[#E25C26] text-white px-4 py-4 space-y-2 overflow-y-auto max-h-screen">
-            <Link to="/" onClick={() => setMobileOpen(false)}>Home</Link>
+            <Link to="/" onClick={() => setMobileOpen(false)}>
+              Home
+            </Link>
             <button
               onClick={() => setServicesOpenMobile(!servicesOpenMobile)}
               className="flex items-center justify-between w-full"
@@ -170,26 +242,53 @@ export default function Navbar() {
                         {col.title}
                       </Link>
                     </h4>
-                    <ul className="space-y-1 text-sm">
-                      {col.items.map((item, i) => (
-                        <li
-                          key={i}
-                          className="hover:text-orange-600 cursor-pointer"
-                        >
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
+                   <ul className="space-y-1 text-sm">
+  {col.items.map((item, i) => (
+    <li key={i}>
+      <Link
+        to={col.path}
+        className="hover:text-orange-600 cursor-pointer"
+        onClick={() => setServicesOpenMobile(false)} // ✅ close mobile dropdown
+      >
+        {item}
+      </Link>
+    </li>
+  ))}
+</ul>
+
                   </div>
                 ))}
               </div>
             )}
-            <Link to="/emergency" onClick={() => setMobileOpen(false)}>Emergency electrician</Link>
-            <Link to="/about" onClick={() => setMobileOpen(false)}>About</Link>
-            <Link to="/contact" onClick={() => setMobileOpen(false)}>Contact</Link>
-            <Link to="/areas" onClick={() => setMobileOpen(false)}>Areas we services</Link>
-            <Link to="/account" onClick={() => setMobileOpen(false)}>Account</Link>
-            <Link to="/cart" onClick={() => setMobileOpen(false)}>Cart</Link>
+            <Link to="/emergency" onClick={() => setMobileOpen(false)}>
+              Emergency electrician
+            </Link>
+            <Link to="/about" onClick={() => setMobileOpen(false)}>
+              About
+            </Link>
+            <Link to="/contact" onClick={() => setMobileOpen(false)}>
+              Contact
+            </Link>
+            <Link to="/areas" onClick={() => setMobileOpen(false)}>
+              Areas we services
+            </Link>
+            <Link to="/cart" onClick={() => setMobileOpen(false)}>
+              Cart
+            </Link>
+
+            {/* ✅ Mobile account */}
+            {userName ? (
+              <button
+                onClick={handleLogout}
+                className="text-left px-2 py-1 mt-2 bg-black/30 rounded"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link to="/auth" onClick={() => setMobileOpen(false)}>
+                Account
+              </Link>
+            )}
           </div>
         )}
       </div>
