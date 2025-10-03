@@ -1,5 +1,5 @@
 import React from "react";
-import paymentSuccessImg from "../assets/about1.jpg";
+import paymentSuccessImg from "../assets/success.png";
 
 export default function Payment({ show, onClose }) {
   if (!show) return null;
