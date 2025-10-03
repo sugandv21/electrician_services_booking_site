@@ -176,6 +176,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 # CSRF / cookie settings for cross-origin dev (adjust for prod)
 CSRF_TRUSTED_ORIGINS = [
+    "https://eelectricdreams.netlify.app",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
@@ -199,6 +200,7 @@ CSRF_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SECURE = True 
 
 CSRF_COOKIE_SECURE = True 
+
 
 
 
